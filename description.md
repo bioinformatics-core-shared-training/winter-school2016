@@ -13,6 +13,10 @@ Craik-Marshall Training Room, Cambridge
 
 Accomodation is available from Tuesday 6th December to Friday 9th
 
+# Prerequisites
+
+This course is aimed at beginners, no prior knowledge is required
+
 # Programme
 
 ## Day 1
