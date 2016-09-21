@@ -31,16 +31,16 @@ On day 3 will use some practical statistics examples in R to introduce concepts 
 # Instructors
 
 - Aaron Lun
-- Catalina Vallejos
-- Hugo Tavares
+- [Catalina Vallejos](https://sites.google.com/site/catalinavallejosmeneses/)
+- [Hugo Tavares](http://www.slcu.cam.ac.uk/directory/hugotavares)
 
 # Keynote lectures
 
-- Florian Markowetz
-- John Marioni
+- [Florian Markowetz](http://www.markowetzlab.org/)
+- [John Marioni](http://www.cruk.cam.ac.uk/research-groups/marioni-group)
 
 # Organisers
-- Mark Dunning
+- [Mark Dunning](http://markdunning.github.io/)
 - Lee Larcombe
 - Gabriella Rustici
 
