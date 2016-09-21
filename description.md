@@ -7,11 +7,13 @@ This three day course is intended to open doors to applying statistics - whether
 
 # Venue
 
-Craik-Marshall Training Room, Cambridge
+[Craik-Marshall Training Room](http://bioinfotraining.bio.cam.ac.uk/about/findus), Cambridge
 
 # Accomodation
 
-Accomodation is available from Tuesday 6th December to Friday 9th
+Accomodation is available at [Jesus College](http://www.jesus.cam.ac.uk/) from Tuesday 6th December to Friday 9th
+
+
 
 # Prerequisites
 
@@ -44,5 +46,6 @@ On day 3 will use some practical statistics examples in R to introduce concepts 
 - Lee Larcombe
 - Gabriella Rustici
 
+# Social Events
 
-
+College Dinner To be confirmed
