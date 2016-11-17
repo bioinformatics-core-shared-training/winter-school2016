@@ -35,6 +35,7 @@ On day 3 will use some practical statistics examples in R to introduce concepts 
 - Aaron Lun
 - [Catalina Vallejos](https://sites.google.com/site/catalinavallejosmeneses/)
 - [Hugo Tavares](http://www.slcu.cam.ac.uk/directory/hugotavares)
+- [Aiora Zabala](http://aiorazabala.net/)
 
 # Keynote lectures
 
