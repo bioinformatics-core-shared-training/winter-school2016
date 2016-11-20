@@ -90,7 +90,7 @@ Introduction to R and Rstudio
 * Getting to know Rstudio
 * Learn basic syntax of R
 
-The materials for this session are available from the Data Carpentry website ([here](http://www.datacarpentry.org/R-ecology-lesson/)).
+The materials for this session are available from the Data Carpentry website (Lesson 1 [here](http://www.datacarpentry.org/R-ecology-lesson/)).
 
 
 Data manipulation in R
@@ -98,10 +98,10 @@ Data manipulation in R
 
 * Read data from a file
 * Understand what factors are
-* Understand how to manipulate a ```data.frame``` object
+* Understand how to manipulate a `data.frame` object
 * Filter and summarise data
 
-The materials for this session are available from the Data Carpentry website ([here](http://www.datacarpentry.org/R-ecology-lesson/)).
+The materials for this session are available from the Data Carpentry website (Lessons 2-4 [here](http://www.datacarpentry.org/R-ecology-lesson/)).
 
 
 Data visualisation in R
@@ -121,7 +121,8 @@ on using the `ggplot2` package.
 Data visualisation in R
 ========================================================
 
-Make sure you have the `surveys` data in the right format:
+Make sure you have the `surveys` data in the right format (as detailed in [this lesson]
+(http://www.datacarpentry.org/R-ecology-lesson/04-dplyr.html#exporting-data)):
 
 ```{r, echo = F}
 surveys <- read.csv("https://ndownloader.figshare.com/files/2292169")
@@ -154,10 +155,11 @@ Data visualisation in R - scatterplot
 Let's say we want to see if there is a correlation between the
 animal's weight and its hindfoot length.
 
-We can use the `plot()` function for this, with the values for the `x` and `y` axis.
+We can use the `plot()` function for this, indicating what values we want 
+to be assigned to the `x` and `y` axis.
 
 ```{r, fig.align = "center", fig.width = 10, dev.args=list(pointsize=20)}
-plot(surveys_complete$weight, surveys_complete$hindfoot_length)
+plot(x = surveys_complete$weight, y = surveys_complete$hindfoot_length)
 ```
 
 Challenge: how can we change the axis labels? Check the help for the function with `?plot`
@@ -172,7 +174,7 @@ plot(surveys_complete$weight, surveys_complete$hindfoot_length,
      pch = 16, col = "seagreen")
 ```
 
-What do these other arguments do? 
+What do the `pch` and `col` arguments do? 
 
 Many of these graphical parameters can be found in the `par` function.
 Check its help to see if you find what these arguments do.
