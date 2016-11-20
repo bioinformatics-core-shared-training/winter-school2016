@@ -3,6 +3,8 @@ Data Organisation and Introduction to R
 author: Hugo Tavares (hugo.tavares@slcu.cam.ac.uk)
 date: 7 Dec 2016
 autosize: true
+width: 1500
+height: 900
 
 Cancer Research Uk Bioinformatics Winter School: Cambridge, 7th-9th December 2016
 
@@ -154,7 +156,6 @@ Data visualisation in R - scatterplot
 
 Let's say we want to see if there is a correlation between the
 animal's weight and its hindfoot length.
-
 We can use the `plot()` function for this, indicating what values we want 
 to be assigned to the `x` and `y` axis.
 
