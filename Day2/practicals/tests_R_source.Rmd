@@ -34,6 +34,12 @@ tea.data <- table(true.first, guess.first) ## ANSWER ##
 tea.data ## ANSWER ##
 ```
 
+For 2-by-2 tables, Fisher's exact test works by testing whether the "odds ratio" is equal to 1.
+The "odds ratio" is calculated as a ratio of odds (obviously) between our two experimental conditions, i.e., milk or tea added first.
+What are the odds that the guess was milk in the cases where milk was added first? 3:1.
+What are the odds that the guess was milk in the cases where tea was added first? 1:3.
+Thus, the sample odds ratio between milk/tea first is 3:1/1:3 = 9.
+
 Now, apply `fisher.test` to the table.
 
 ```{r}
@@ -43,7 +49,7 @@ f.out ## ANSWER ##
 ```
 
 How do I extract the _p_-value?
-How do I extract the odds ratio?
+How do I extract the odds ratio? (__Note:__ this is slightly different from the sample odds ratio.)
 Does it matter if I switch the rows and columns?
 
 ```{r}
@@ -62,13 +68,13 @@ The odds ratio is the same regardless of whether it is computed using odds per c
 
 A key assumption is:
 
-
 - Observations are **independent**, randomly sampled from a population
 
-Here, the "population" refers to the set of all possible observations taken from this particular woman (not from the population of all women!). Each observation (i.e., the guess for each cup) is assumed to be independent of the others.
+Here, the "population" refers to the set of all possible observations taken from this particular woman (not from the population of all women!). 
+Each observation (i.e., the guess for each cup) is assumed to be independent of the others.
 
 _Note:_ What is the null hypothesis for larger contingency tables?
-That the distribution of counts across each row is the same for all columns. ## ANSWER ##
+That the experimental condition does not affect the guesses, i.e., that the distribution of counts across columns is the same for all rows. ## ANSWER ##
 
 ```{r}
 true.first <- rep(c("Milk", "Tea", "Sugar"), each=6)
@@ -145,10 +151,12 @@ chisq.test(genotab, p=genoexp) ## ANSWER ##
 
 This is useful for comparing our observations against an expected value under the null hypothesis.
 For example, I set the thermostat for my office to 25 degrees Celsius.
-To check whether it's at the intended temperature, I measure the temperature at weekly intervals.
+To check whether it's at the intended temperature, I measure the temperature every day for a month.
 
 ```{r}
-temp <- c(23, 23, 24, 25, 22, 24, 22)
+temp <- c(22.8, 22.7, 25.9, 22.0, 21.2, 24.4, 22.1, 22.6, 23.3, 22.2, 
+          22.5, 24.1, 22.4, 25.1, 24.1, 23.3, 23.3, 22.5, 23.8, 22.4, 
+          22.5, 23.4, 23.5, 22.5, 25.8, 23.8, 22.0, 22.0, 23.2, 22.0)
 ```
 
 My null hypothesis is that the temperature is indeed 25 degrees Celsius.
@@ -192,13 +200,16 @@ t.test(temp, mu=25, alternative="greater") ## ANSWER ##
 
 This is useful for comparing between observations from two groups.
 For example, let's say I run a chicken farm.
-I randomly select 6 chickens and feed them with soybean.
-I randomly select another 8 chickens and feed them with sunflower seeds.
+I randomly select 20 chickens and feed them with soybean.
+I randomly select another 30 chickens and feed them with sunflower seeds.
 I measure their weights after 6 weeks:
 
 ```{r}
-on.soy <- c(199, 171, 189, 225, 261, 204)
-on.sun <- c(303, 363, 328, 371, 354, 287, 251, 308)
+on.soy <- c(188, 229, 192, 207, 172, 151, 188, 173, 209, 158, 
+            211, 201, 205, 249, 214, 171, 198, 192, 161, 179)
+on.sun <- c(213, 262, 237, 223, 223, 268, 216, 276, 258, 269,
+            227, 252, 243, 286, 247, 277, 242, 233, 228, 211, 
+            230, 254, 268, 242, 223, 242, 224, 279, 227, 251)
 ```
 
 I want to see if there is a difference in weight between the feed types.
@@ -219,7 +230,7 @@ The two-sample $t$-test assumes that
 
 - Observations are normally distributed **within** each group
 
-As in the 1-sample $t$-test, the Central Limit Theorem allows us to use this test when the sample size is large (rule of thumb: at least 30 observations within each group).
+As in the one-sample t-test, the Central Limit Theorem allows us to use this test for non-normal data when the sample size is large (rule of thumb: > 30 observations per group).
 
 The groups don't have to be of equal size (i.e., "unbalanced"), though greater power is usually achieved if they are equal.
 
@@ -248,13 +259,13 @@ t.test(on.sun, on.soy, alternative="greater") ## ANSWER ##
 ## Paired samples t-test
 
 This is useful for comparing between groups where the samples are paired in some manner.
-For example, let's say I randomly sample 8 patients and collect healthy and diseased tissue from each.
+For example, let's say I randomly sample 15 patients and collect healthy and diseased tissue from each.
 I measure the expression of a gene in each of healthy/disease samples (e.g., via qPCR):
 
 ```{r}
-                    #1   #2   #3   #4   #5   #6   #7   #8
-healthy.exprs <- c(5.1, 3.2, 5.6, 2.1, 2.3, 4.8, 4.2, 3.8)
-disease.exprs <- c(4.9, 2.6, 5.1, 2.4, 1.7, 3.9, 3.8, 3.1)
+                    #1   #2   #3   #4   #5   #6   #7    #8   #9   #10  #11  #12  #13  #14  #15
+healthy.exprs <- c(6.9, 8.2, 9.0, 7.7, 6.5, 7.7, 5.5,  7.7, 7.6,  8.2, 6.5, 6.3, 8.7, 6.2, 8.4)
+disease.exprs <- c(8.3, 9.5, 9.8, 9.9, 6.6, 8.1, 9.5, 10.0, 8.7, 10.0, 7.5, 8.0, 8.5, 5.0, 8.5)
 ```
 
 I want to know if the gene is differentially expressed upon disease.
@@ -268,15 +279,15 @@ How could I do a paired-sample t-test?
 t.test(healthy.exprs, disease.exprs, paired=TRUE) ## ANSWER ##
 ```
 
-The assumptions are simular to the ones for two-sample $t$-test, namely:
+Some of the assumptions are simular to the ones for two-sample $t$-test, namely:
 
 - **Within** each group, observations are **independent** and randomly drawn from a population
 
-- Observations are normally distributed **within** each group
-
-However, the paired $t$-test does not assume independence between the group. Instead, it assumes that:
+However, the paired $t$-test does not assume independence between the groups. Instead, it assumes that:
 
 - Pairs of samples are randomly drawn from a population (i.e. each pair is **independent** from all the others)
+
+- Differences between paired observations are normally distributed.
 
 As before, the Central Limit Theorem allows us to use this test when the sample size is large (rule of thumb: at least 30 pairs of observations).
 
@@ -285,11 +296,21 @@ Just like the other t-tests, this can also be two-sided or one-sided, depending 
 ## Are the data normal?
 
 A key assumption of all the previous tests was that that data were normally distributed.
-We can check this with `qqnorm` and `qqline`:
+We can check this with histograms:
 
 ```{r}
 data1 <- rnorm(1000)
 data2 <- runif(1000)
+par(mfrow=c(1,2)) ## ANSWER ##
+hist(data1) # looks normal
+hist(data2) # doesn't look normal.
+```
+
+Alternatively, rather than trying to match the shape of the histogram to the shape of the normal distribution, we can use `qqnorm` and `qqline`.
+These plot the quantiles of the observed distribution (i.e., the value at 10%, 25%, 50%, etc.) against the expected quantiles for a normal distribution.
+A normally-distributed set of observations should lie on the diagonal of the quantile-quantile plot. 
+
+```{r}
 # Put some code here!
 par(mfrow=c(1,2)) ## ANSWER ##
 qqnorm(data1) ## ANSWER ##
@@ -318,7 +339,7 @@ disease <- rnorm(1000, mean=1)
 healthy <- rnorm(1000, mean=2)
 # Put some code here!
 par(mfrow=c(1,2)) ## ANSWER ##
-effect <- disease - healthy## ANSWER ##
+effect <- disease - healthy ## ANSWER ##
 qqnorm(effect)## ANSWER ##
 qqline(effect) ## ANSWER ##
 ```

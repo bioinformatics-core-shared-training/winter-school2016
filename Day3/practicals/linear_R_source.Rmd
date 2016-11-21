@@ -354,59 +354,23 @@ r2 <- round(summary(fit)$r.squared, 3) ## ANSWER ##
 text(min(time), max(conc), bquote(R^2*"="*.(r2)), pos=4, col="red") ## ANSWER ##
 ```
 
-## Fitting a spline
-
-Let's say I have a collection of reaction rates for an enzyme at varying temperatures.
+__Advanced:__ How do I model non-linear trends with respect to the covariate?
+Using splines! 
+Interested readers can try to decipher the following code.
 
 ```{r}
+# Reaction rates for an enzyme at varying temperatures.
 rate <- c(3.7, 10.8, 18.0, 23.7, 28.9, 26.9, 26.6, 25.0, 18.0, 10.7) # uM/min
 temp <- c(  5,   10,   15,   20,   25,   30,   35,   40,   45,   50) # degrees Celsius
-```
 
-What happens if we try to fit a line of best fit?
-
-```{r}
-# Put some code here!
-fit.l <- lm(rate ~ temp) ## ANSWER ##
-plot(temp, rate, xlab="Temperature (dC)", ylab="Reaction rate (uM/min)") ## ANSWER ##
-abline(a=coef(fit.l)[1], b=coef(fit.l)[2], col="red", lwd=2) ## ANSWER ##
-r2 <- round(summary(fit)$r.squared, 3) ## ANSWER ##
-text(min(temp), max(rate), bquote(R^2*"="*.(r2)), pos=4, col="red") ## ANSWER ##
-```
-
-We can get around this by fitting a spline instead.
-
-- each "piece" of the spline is a cubic polynomial
-- polynomial parameters are chosen so the pieces join up smoothly
-- the number of pieces is determined by the degrees of freedom (or "knots")
-
-This is done using the `ns` function from the _splines_ package.
-
-```{r}
+# Fitting a linear model with a spline basis matrix with 3 degrees of freedom.
 library(splines)
 fit <- lm(rate ~ ns(temp, df=3))
+
+# Looks pretty good.
+plot(temp, rate, xlab="Temperature (dC)", ylab="Reaction rate (uM/min)") 
+lines(temp, fitted(fit), col="red") 
 ```
-
-What do the coefficients represent, and how can we interpret their p-values?
-What does the fit look like?
-
-```{r}
-# Put some code here!
-plot(temp, rate, xlab="Temperature (dC)", ylab="Reaction rate (uM/min)") ## ANSWER ## 
-lines(temp, fitted(fit), col="red") ## ANSWER ##
-```
-
-I want to test for significance of my spline fit.
-Here, my null hypothesis is that there is no effect of temperature.
-How would I set up my test (hint: `anova`)? 
-
-```{r}
-# Put some code here!
-anova(fit) ## ANSWER ## 
-```
-
-How do we interpret this?
-Again, this is asking whether the spline has any effect on the fit - if it does, then there's a significant effect of temperature. ## ANSWER ##
 
 ## Covariates vs factors
 
@@ -632,6 +596,55 @@ fit4b <- lm(seedsize4 ~ genotype + batch) ## ANSWER ##
 plot(as.integer(batch), residuals(fit4b), xaxt="n", ylab="Residuals", xlab="Batch") ## ANSWER ##
 axis(side=1, at=1:5, levels(batch)) ## ANSWER ##
 ```
+
+# A brief introduction into generalized linear models
+
+The linear modelling framework can be extended to non-normally-distributed data with *generalized* linear models.
+This requires some additional choices for the model parametrization:
+
+- the distribution for the random component.
+- the link function for the systematic component.
+
+In a standard linear model, the distribution would be Normal and the link function would be the identity link.
+That is, each sum of coefficients in the model is taken directly as the mean of a Normal distribution from which an observation is sampled.
+
+For a GLM, these choices are more involved.
+If we have Poisson-distributed data, the distribution would be Poisson (obviously) and the "canonical" link function would be the log-link.
+That is, each sum of coefficients is used as the log-transformed value of the mean of a Poisson distribution from which an observation is sampled.
+
+To illustrate, let's say we have high-throughput sequencing data for an experiment with 10 replicate samples in each of the WT and KO groups.
+We count the number of transcripts that were detected for a particular gene in all samples.
+
+```{r}
+counts   <- c(14, 12, 11, 18, 10, 18, 12, 17,  7, 12, 27, 22, 11, 12, 24, 23, 15, 17, 20, 21)
+genotype <- c("wt", "wt", "wt", "wt", "wt", "wt", "wt", "wt", "wt", "wt",
+              "ko", "ko", "ko", "ko", "ko", "ko", "ko", "ko", "ko", "ko")
+genotype <- relevel(factor(genotype), ref="wt")
+```
+
+We can fit a GLM using the `glm` command, specifying the Poisson distribution.
+
+```{r}
+gfit <- glm(counts ~ genotype, family=poisson(link = "log"))
+gfit
+```
+
+What do the coefficients represent (hint: it's a log-link model)?
+
+```{r}
+# Put some code here!
+log(mean(counts[genotype=="wt"])) ## ANSWER ##
+log(mean(counts[genotype=="ko"])) - log(mean(counts[genotype=="wt"])) ## ANSWER ##
+```
+
+How can I get a p-value to test if the KO has any effect on the expression of this gene?
+
+```{r}
+# Put some code here!
+summary(gfit) ## ANSWER ##
+```
+
+Many more distributions are supported by GLMs --  see `?family` for a list of the ones available in R.
 
 # Session information
 
