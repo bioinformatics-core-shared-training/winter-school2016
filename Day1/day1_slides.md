@@ -182,8 +182,7 @@ plot(surveys_complete$weight, surveys_complete$hindfoot_length,
 
 What do the `pch` and `col` arguments do? 
 
-Many of these graphical parameters can be found in the `par` function.
-Check its help to see if you find what these arguments do.
+Many of these graphical parameters can be found in the `par` function (see its help: `?par`).
 
 
 Data visualisation in R - histogram

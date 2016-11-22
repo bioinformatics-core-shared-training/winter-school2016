@@ -177,8 +177,7 @@ plot(surveys_complete$weight, surveys_complete$hindfoot_length,
 
 What do the `pch` and `col` arguments do? 
 
-Many of these graphical parameters can be found in the `par` function.
-Check its help to see if you find what these arguments do.
+Many of these graphical parameters can be found in the `par` function (see its help: `?par`).
 
 
 Data visualisation in R - histogram
@@ -188,7 +187,7 @@ We would like to know what kind of distribution our data follow.
 
 A typical way to display this information is using a histogram:
 
-```{r, fig.align = "center", fig.width = 10, dev.args=list(pointsize=20)}
+```{r, fig.align = "center", fig.width = 10, fig.height = 6, dev.args=list(pointsize=20)}
 hist(surveys_complete$hindfoot_length, breaks = 100, xlab = "Hindfoot length (mm)")
 ```
 
