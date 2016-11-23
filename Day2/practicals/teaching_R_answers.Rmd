@@ -1,0 +1,524 @@
+---
+title: Descriptive analyses and basic plotting in R
+author: Aaron Lun, Catalina Vallejos
+date: 11 December 2016
+output: 
+  html_document:
+    fig_caption: false
+---
+
+# Introducing (R)markdown
+
+Use triple backticks to indicate code environments:
+
+```{r}
+a <- 1
+print(a)
+```
+
+Set `eval=FALSE` to show the code, but not run it:
+
+```{r, eval=FALSE}
+a <- 2
+print(a)
+```
+
+Set `echo=FALSE` to run the code, but not show it:
+
+```{r, echo=FALSE}
+a <- 3
+print(a)
+```
+
+Set `results="hide"` to hide the results:
+
+```{r, results="hide"}
+a <- 4
+print(a)
+```
+
+For plots, set `fig.width` and `fig.height` to change the dimensions of the output plot:
+
+```{r, fig.width=10, fig.height=6}
+hist(rnorm(10000), xlab="X", main="Normal distribution")
+```
+
+By default, _knitr_ (the software that compiles the Rmarkdown files) will continue processing the file, even if an error has occurred within a code block.
+To make it stop at the first error, it's advisable to set:
+
+```{r}
+knitr::opts_chunk$set(error=FALSE)
+```
+
+The same argument can also be used to globally set other arguments for all chunks, e.g., `fig.width`.
+See `?knitr::opts_chunk` and http://yihui.name/knitr/options#chunk_options for more details.
+
+# Exploring the `cars` dataset
+
+## Initial examination of the data
+
+Let's look at one of the datasets that come with the R installation.
+From the documentation in `?cars`:
+
+> The data give the speed of cars and the distances taken to stop.
+> Note that the data were recorded in the 1920s.  
+
+We can inspect the first few elements:
+
+```{r}
+head(cars)
+```
+
+Or the last few elements - how would we do that?
+
+```{r}
+tail(cars) 
+```
+
+We can have a look at some summary statistics:
+
+```{r}
+summary(cars)
+```
+    
+Speed is in miles per hour (mph), while distance is in feet; this seems reasonable for cars from the 1920s.
+
+What functions would we use to directly calculate:
+
+- the mean?
+- the median?
+- the standard deviation?
+- the mininimum or maximum?
+- the first or third quartiles?
+
+```{r}
+mean(cars$speed) # mean 
+median(cars$speed) # median 
+sd(cars$speed) # standard deviation 
+min(cars$speed) # minimum 
+max(cars$speed) # maximum 
+quantile(cars$speed, p=0.25) # first quartile 
+quantile(cars$speed, p=0.75) # third quartile 
+```
+
+## Generating some summary plots
+
+We can make histograms of the two sets of values:
+
+```{r}
+hist(cars$speed, xlab="Speed (mph)", main="Speed distribution")
+hist(cars$dist, xlab="Distance (ft)", main="Distance distribution")
+```
+
+What happens if you set:
+
+- `breaks=10`? 
+- `col="red"`? 
+- `xlim=c(0, 50)`?
+- `border="grey"`? 
+
+```{r}
+# Smaller bars at a higher resolution: 
+hist(cars$speed, xlab="Speed (mph)", main="Speed distribution", breaks=10) 
+# Coloured bars: 
+hist(cars$speed, xlab="Speed (mph)", main="Speed distribution", col="red") 
+# Limits to the x-axis boundaries: 
+hist(cars$speed, xlab="Speed (mph)", main="Speed distribution", xlim=c(0, 50)) 
+# Coloured borders: 
+hist(cars$speed, xlab="Speed (mph)", main="Speed distribution", col="grey") 
+```
+
+(__Note:__ how do you find out what arguments can be supplied to a function?)
+
+We can also make a scatter plot of speeds vs distances, below.
+Why is the speed on the x-axis?
+
+```{r}
+plot(cars$speed, cars$dist, xlab="Speed (mph)", ylab="Distance (ft)")
+```
+
+What happens if we set:
+
+- `pch=16`, or `pch=4`?
+- `cex=2`, or `cex.axis=2`, or `cex.label=2`?
+
+```{r}
+# Change the type of point: 
+plot(cars$speed, cars$dist, xlab="Speed (mph)", ylab="Distance (ft)", pch=4) 
+# Change the size of point: 
+plot(cars$speed, cars$dist, xlab="Speed (mph)", ylab="Distance (ft)", cex=2) 
+# Change the size of the axis text: 
+plot(cars$speed, cars$dist, xlab="Speed (mph)", ylab="Distance (ft)", cex.axis=2) 
+```
+
+Let's say I want to highlight points corresponding to cars travelling above 10 mph (the speed limit at the time).
+How do I select these points?
+How do I highlight them on the plot (hint: `points`)?
+How do I add a legend specifying the meaning of the highlights (hint: `legend`)?
+
+```{r}
+plot(cars$speed, cars$dist, xlab="Speed (mph)", ylab="Distance (ft)")
+above.limit <- cars$speed > 10 
+points(cars$speed[above.limit], cars$dist[above.limit], col="red", pch=16) 
+legend("topleft", col=c("black", "red"), pch=c(1, 16), c("Safe", "Illegal")) 
+```
+
+# Exploring the `chickwts` dataset
+
+## Initial examination of the data
+
+From the documentation in `?chickwts`:
+
+> An experiment was conducted to measure and compare the effectiveness of various feed supplements on the growth rate of chickens.
+
+Examine the data:
+
+```{r}
+head(chickwts)
+```
+
+Looking at some summaries of the data:
+
+```{r}
+summary(chickwts)
+```
+
+Getting the number of samples for each feed type:
+
+```{r}
+table(chickwts$feed)
+```
+
+Previous `summary` computes values across all feed types - what's missing here?
+
+## Computing summaries for each feed type
+
+We need to split up the data values to a list.
+
+```{r}
+by.feed.type <- split(chickwts$weight, chickwts$feed)
+by.feed.type
+```
+
+What does `split` do?
+Try it out on these two vectors below:
+
+```{r}
+fruit <-  c("apple", "apple", "grapes", "banana", "apple", "banana")
+colour <- c("green",   "red",    "red", "yellow", "green",  "green")
+split(colour, fruit) # Splits colours by the fruit 
+split(fruit, colour) # Split fruits by the colour 
+```
+
+We loop across the list with a `lapply`, applying `summary` to each element.
+
+```{r}
+lapply(by.feed.type, FUN=summary)
+```
+
+__Advanced:__ the code below does the same job as `lapply` - can you figure out what it does?
+What is `names(by.feed.type)`?
+
+```{r}
+output <- list()
+for (feed.type in names(by.feed.type)) {
+    output[[feed.type]] <- summary(by.feed.type[[feed.type]])
+}
+output
+```
+
+## Making various types of plots
+
+### Making a boxplot
+
+Let's make a boxplot:
+
+```{r}
+boxplot(by.feed.type, ylab="Chick weight (g)")
+```
+
+How can we colour each box plot separately?
+How can we make them horizontal?
+What do the points in the plot represent (hint: have a look at the `range` argument in `?boxplot`)?
+
+```{r}
+# Colouring the boxplots: 
+feed.cols <- c("blue", "red", "green", "yellow", "purple", "pink") 
+boxplot(by.feed.type, ylab="Chickweight (g)", col=feed.cols) 
+# Making the boxplots horizontal: 
+boxplot(by.feed.type, xlab="Chickweight (g)", horizontal=TRUE, las=1) 
+# Extending whiskers to the data extremes: 
+boxplot(by.feed.type, ylab="Chickweight (g)", range=0) 
+```
+
+### Making a barplot
+
+We can also make a barplot of the mean weights for all feed types.
+What does the code below do?
+
+```{r}
+mean.wts <- lapply(by.feed.type, FUN=mean)
+mean.wts
+```
+
+The `barplot` function requires a vector, rather than a list.
+What does `unlist` do?
+
+```{r}
+mean.wts <- unlist(mean.wts)
+mean.wts
+```
+
+(Interested users may wish to also look at `sapply`.)
+
+Let's make the barplot:
+
+```{r}
+barplot(mean.wts, ylab="Mean weight (g)")
+```
+
+Can you change the colour of each bar?
+Can you make the bars horizontal?
+
+```{r}
+barplot(mean.wts, ylab="Mean weight (g)", col=feed.cols) # Changing the bar colour.
+barplot(mean.wts, ylab="Mean weight (g)", horiz=TRUE, las=1) # Using horizontal bars.
+```
+
+__Advanced__: how do we add error bars?
+Let's compute the standard error:
+
+```{r}
+sd.wts <- lapply(by.feed.type, FUN=sd)
+sd.wts <- unlist(sd.wts)
+se.wts <- sd.wts/sqrt(lengths(by.feed.type))
+```
+
+What's the difference between `sd.wts` and `se.wts`, and which one should we use?
+
+What does `lengths` do, and what's the difference with `length`?
+
+```{r}
+length(by.feed.type) # Gets the length of by.feed.type (number of elements) 
+lengths(by.feed.type) # Gets the length of each element of by.feed.type 
+```
+
+Can you interpret what's happening in the code below?
+
+```{r}
+x.pos <- barplot(mean.wts, ylab="Mean weight (g)", ylim=c(0, max(mean.wts)*1.1))
+mean.plus.se <- mean.wts + se.wts
+segments(x.pos, mean.wts, x.pos, mean.plus.se)
+segments(x.pos+0.1, mean.plus.se, x.pos-0.1, mean.plus.se)
+```
+
+What does the first `segments` call do, and what happens if you take it out?
+What does the second `segments` call do?
+What happens if you take out the `ylim` argument?
+
+```{r}
+```
+
+<!-- ## ANSWER
+The first "segments" draws the vertical part of the error bar. 
+The second "segments" draws the horizontal part of the error bar. 
+The 'ylim' argument ensures that the entirety of the error bar is visible. 
+--> 
+
+# Plotting lines with the `Orange` dataset
+
+## Initial examination of the data
+
+This dataset examines the growth of a number of orange trees over time.
+
+```{r}
+head(Orange)
+```
+
+Having a look at some data summaries:
+
+```{r}
+summary(Orange)
+```
+
+How many trees do we have?
+How many data points do we have per tree?
+
+```{r}
+table(Orange$Tree) 
+```
+
+How can we get summaries of the statistics for each tree?
+
+```{r}
+by.tree <- split(Orange[,-1], Orange$Tree) 
+lapply(by.tree, summary) 
+```
+
+## Making line plots
+
+Making plots of the data:
+
+```{r}
+plot(Orange$age, Orange$circumference, xlab="Age (days)", ylab="Circumference (mm)")
+```
+
+How can we colour the points by the tree identity?
+How can we change the shape of the points by the tree identity?
+If we wanted axes on the log scale, how would we do it (hint: `?plot.default`)?
+
+```{r}
+tree.number <- as.integer(levels(Orange$Tree))[Orange$Tree] # To deal with factors... see later.
+tree.col <- c('red', 'blue', 'grey', 'orange', 'darkgreen')
+plot(Orange$age, Orange$circumference, xlab="Age (days)", ylab="Circumference (mm)", 
+    col=tree.col[tree.number]) # Each point coloured according to the tree. 
+tree.pch <- c(1, 2, 3, 4, 5)
+plot(Orange$age, Orange$circumference, xlab="Age (days)", ylab="Circumference (mm)", 
+    pch=tree.pch[tree.number]) # Each point has shape depending on the tree. 
+plot(Orange$age, Orange$circumference, xlab="Age (days)", ylab="Circumference (mm)", 
+    log="xy") # Putting both axes on the log-scale.  
+```
+
+Each data point is linked to one at an earlier time, _for the same tree_ - how do we represent this (hint: `lines`)?
+
+```{r}
+plot(Orange$age, Orange$circumference, xlab="Age (days)", ylab="Circumference (mm)")
+is.tree.1 <- Orange$Tree==1
+lines(Orange$age[is.tree.1], Orange$circumference[is.tree.1]) 
+lines(Orange$age[Orange$Tree==2], Orange$circumference[Orange$Tree==2]) 
+lines(Orange$age[Orange$Tree==3], Orange$circumference[Orange$Tree==3]) 
+lines(Orange$age[Orange$Tree==4], Orange$circumference[Orange$Tree==4]) 
+lines(Orange$age[Orange$Tree==5], Orange$circumference[Orange$Tree==5]) 
+```
+
+What kind of code would you write to do this automatically (hint: involves a `for` loop)?
+
+```{r}
+plot(Orange$age, Orange$circumference, xlab="Age (days)", ylab="Circumference (mm)")
+for (tree in unique(Orange$Tree)) { 
+    is.tree <- Orange$Tree==tree 
+    lines(Orange$age[is.tree], Orange$circumference[is.tree]) 
+} 
+```
+
+__WARNING!__ Be careful of the ordering of x-coordinates when using `lines`!
+How do we fix the following code (hint: `order`):
+
+```{r}
+x <- runif(50)
+y <- (x-0.5)^2
+plot(x, y)
+lines(x, y)
+plot(x, y) 
+o <- order(x) 
+lines(x[o], y[o]) 
+```
+
+# Further on the power of R graphics
+
+## Overview
+
+A lot of graphical fine-tuning can be performed using the `par` command.
+Looking at `?par` reveals a **LOT** of widely applicable graphical parameters that are not listed in the documentation of individual plotting functions.
+
+To demonstrate, let's use the `trees` data:
+
+> This data set provides measurements of the girth, height and volume of timber in 31 felled black cherry trees. 
+
+Look at the summary of the data:
+
+```{r}
+summary(trees)
+```
+
+## Making some pairwise plots
+
+We'd like to make plots of each variable against the other.
+How can we fit this all onto one image?
+
+```{r, fig.width=10, fig.height=5}
+par(mfrow=c(1, 3))
+plot(trees$Girth, trees$Height)
+plot(trees$Girth, trees$Volume)
+plot(trees$Volume, trees$Height)
+```
+
+What happens if we try to add another plot?
+What other layouts can you think of? 
+
+```{r}
+# Executing another "plot" will start a fresh instance of the graphics device. 
+plot(trees$Girth, trees$Height) 
+# Alternative layouts include: 
+par(mfrow=c(2,2)) 
+plot(trees$Girth, trees$Height) 
+plot(trees$Girth, trees$Volume) 
+plot(trees$Volume, trees$Height) 
+par(mfrow=c(3,1)) 
+plot(trees$Girth, trees$Height) 
+plot(trees$Girth, trees$Volume) 
+plot(trees$Volume, trees$Height) 
+```
+
+In an interactive session, how can we get back to a one-panel plot (hint: what happens if you run `dev.off`)?
+
+## Messing with the margins 
+
+What happens here?
+
+```{r}
+par(mar=c(1.1, 1.1, 1.1, 1.1))
+plot(trees$Girth, trees$Height)
+```
+
+Try tinkering around with the numbers - what do they represent?
+(Or you can just look at `?par`.)
+
+```{r}
+par(mar=c(5.1, 1.1, 1.1, 1.1)) # Bottom margin 
+plot(trees$Girth, trees$Height) 
+par(mar=c(1.1, 5.1, 1.1, 1.1)) # Left margin 
+plot(trees$Girth, trees$Height) 
+par(mar=c(1.1, 1.1, 5.1, 1.1)) # Top margin 
+plot(trees$Girth, trees$Height) 
+par(mar=c(1.1, 1.1, 1.1, 5.1)) # Right margin 
+plot(trees$Girth, trees$Height) 
+```
+
+## Other ways to save R plots
+
+An alternative to Rstudio's export is to save R plots directly to file with various graphics devices.
+
+```{r}
+pdf("my_plot.pdf")
+plot(trees$Girth, trees$Height)
+dev.off()
+```
+
+What do the `width` and `height` arguments do?
+What happens if you specify multiple plots?
+
+```{r}
+pdf("my_plot.pdf", width=10, height=6) # This specifies the size of the plot (in). 
+plot(trees$Girth, trees$Height)  
+plot(trees$Girth, trees$Volume) # This makes a new page of the PDF. 
+dev.off() 
+```
+
+PDFs are preferable for viewing plots in high resolution, but you can also save to PNG (e.g., if there are too many data points to store in a PDF).
+Some tinkering is required to save in a decent resolution, though:
+
+```{r}
+png("my_plot.png", width=2000, height=2000, res=300, pointsize=15)
+plot(trees$Girth, trees$Height)
+dev.off()
+```
+
+# Session information
+
+It's always wise to store your session information, so you know what version of R (and its packages) you ran it on.
+
+```{r}
+sessionInfo() 
+```
+
