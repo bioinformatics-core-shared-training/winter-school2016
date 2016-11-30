@@ -291,11 +291,10 @@ What happens if you take out the `ylim` argument?
 ```{r}
 ```
 
-<!-- ## ANSWER
-The first "segments" draws the vertical part of the error bar. 
-The second "segments" draws the horizontal part of the error bar. 
-The 'ylim' argument ensures that the entirety of the error bar is visible. 
--->
+* The first "segments" draws the vertical part of the error bar. 
+* The second "segments" draws the horizontal part of the error bar. 
+* The 'ylim' argument ensures that the entirety of the error bar is visible. 
+
 
 # Plotting lines with the `Orange` dataset
 

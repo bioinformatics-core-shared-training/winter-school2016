@@ -262,8 +262,7 @@ What happens if you take out the `ylim` argument?
 # Put some code here!
 ```
 
-<!-- ## ANSWER
--->
+
 
 # Plotting lines with the `Orange` dataset
 
