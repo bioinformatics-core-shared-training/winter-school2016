@@ -231,8 +231,6 @@ Can you make the bars horizontal?
 
 ```{r}
 # Put some code here!
-barplot(by.feed.type$mean, names.arg = by.feed.type$feed, ylab="Mean weight (g)", 
-barplot(by.feed.type$mean, names.arg = by.feed.type$feed, xlab="Mean weight (g)", 
 ```
 
 __Advanced__: how do we add error bars?
@@ -265,6 +263,7 @@ What happens if you take out the `ylim` argument?
 ```
 
 <!-- ## ANSWER
+-->
 
 # Plotting lines with the `Orange` dataset
 
@@ -345,8 +344,10 @@ If we wanted axes on the log scale, how would we do it (hint: `?plot.default`)?
 tree.number <- as.integer(levels(Orange$Tree))[Orange$Tree] # To deal with factors... see later.
 tree.col <- c('red', 'blue', 'grey', 'orange', 'darkgreen')
 # Put some code here!
+
 tree.pch <- c(1, 2, 3, 4, 5)
 # Put some code here!
+
 ```
 
 Each data point is linked to one at an earlier time, _for the same tree_ - how do we represent this (hint: `lines`)?

@@ -264,9 +264,9 @@ Can you make the bars horizontal?
 ```{r}
 # Put some code here!
 barplot(by.feed.type$mean, names.arg = by.feed.type$feed, ylab="Mean weight (g)") ## ANSWER ##
-barplot(by.feed.type$mean, names.arg = by.feed.type$feed, ylab="Mean weight (g)", 
+barplot(by.feed.type$mean, names.arg = by.feed.type$feed, ylab="Mean weight (g)", ## ANSWER ##
         col=feed.cols) # Changing the bar colour. ## ANSWER ##
-barplot(by.feed.type$mean, names.arg = by.feed.type$feed, xlab="Mean weight (g)", 
+barplot(by.feed.type$mean, names.arg = by.feed.type$feed, xlab="Mean weight (g)", ## ANSWER ##
         horiz=TRUE, las=1) # Using horizontal bars. ## ANSWER ##
 ```
 
@@ -303,7 +303,7 @@ What happens if you take out the `ylim` argument?
 The first "segments" draws the vertical part of the error bar. ## ANSWER ##
 The second "segments" draws the horizontal part of the error bar. ## ANSWER ##
 The 'ylim' argument ensures that the entirety of the error bar is visible. ## ANSWER ##
---> ## ANSWER ##
+-->
 
 # Plotting lines with the `Orange` dataset
 
@@ -369,11 +369,11 @@ minimum and maximum) for the age and circumference of each tree?
 by.tree <- Orange %>% ## ANSWER ##
   group_by(Tree) %>% ## ANSWER ##
   summarise_each(funs(min = min(.), ## ANSWER ##
-                 q1 = quantile(., p = 0.25), ## ANSWER ##
-                 median = quantile(., p = 0.5), ## ANSWER ##
-                 mean = mean(.), ## ANSWER ##
-                 q3 = quantile(., p = 0.75), ## ANSWER ##
-                 max = max(.)), ## ANSWER ##
+                      q1 = quantile(., p = 0.25), ## ANSWER ##
+                      median = quantile(., p = 0.5), ## ANSWER ##
+                      mean = mean(.), ## ANSWER ##
+                      q3 = quantile(., p = 0.75), ## ANSWER ##
+                      max = max(.)), ## ANSWER ##
                  age, circumference) ## ANSWER ##
 ```
 
@@ -396,10 +396,12 @@ tree.col <- c('red', 'blue', 'grey', 'orange', 'darkgreen')
 # Put some code here!
 plot(Orange$age, Orange$circumference, xlab="Age (days)", ylab="Circumference (mm)", ## ANSWER ##
     col=tree.col[tree.number]) # Each point coloured according to the tree. ## ANSWER ##
+
 tree.pch <- c(1, 2, 3, 4, 5)
 # Put some code here!
 plot(Orange$age, Orange$circumference, xlab="Age (days)", ylab="Circumference (mm)", ## ANSWER ##
     pch=tree.pch[tree.number]) # Each point has shape depending on the tree. ## ANSWER ##
+
 plot(Orange$age, Orange$circumference, xlab="Age (days)", ylab="Circumference (mm)", ## ANSWER ##
     log="xy") # Putting both axes on the log-scale.  ## ANSWER ##
 ```
