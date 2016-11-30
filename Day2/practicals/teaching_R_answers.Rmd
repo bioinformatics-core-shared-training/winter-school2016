@@ -503,6 +503,23 @@ par(mar=c(1.1, 1.1, 1.1, 5.1)) # Right margin
 plot(trees$Girth, trees$Height) 
 ```
 
+Earlier, we made a barplot with mean chicken weights by feed that didn't look quite right:
+
+```{r}
+dev.off() # close and reset the plotting area
+barplot(by.feed.type$mean, names.arg = by.feed.type$feed, xlab="Mean weight (g)",
+        horiz=TRUE, las=1)
+```
+
+Can you make the labels on the y-axis visible?
+
+```{r}
+par(mar = c(5, 6, 4, 2)) 
+barplot(by.feed.type$mean, names.arg = by.feed.type$feed, xlab="Mean weight (g)", 
+        horiz=TRUE, las=1) # Using horizontal bars. 
+```
+
+
 ## Other ways to save R plots
 
 An alternative to Rstudio's export is to save R plots directly to file with various graphics devices.

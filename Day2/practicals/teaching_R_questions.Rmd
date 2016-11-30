@@ -436,6 +436,21 @@ Try tinkering around with the numbers - what do they represent?
 # Put some code here!
 ```
 
+Earlier, we made a barplot with mean chicken weights by feed that didn't look quite right:
+
+```{r}
+dev.off() # close and reset the plotting area
+barplot(by.feed.type$mean, names.arg = by.feed.type$feed, xlab="Mean weight (g)",
+        horiz=TRUE, las=1)
+```
+
+Can you make the labels on the y-axis visible?
+
+```{r}
+# Put  some code here!
+```
+
+
 ## Other ways to save R plots
 
 An alternative to Rstudio's export is to save R plots directly to file with various graphics devices.
