@@ -253,7 +253,7 @@ boxplot(chickwts$weight ~ chickwts$feed, ylab="Chickweight (g)", range=0) ## ANS
 We can also make a barplot of the mean weights for all feed types.
 
 ```{r}
-barplot(by.feed.type$mean)
+barplot(by.feed.type$mean, ylab = "Mean weight (g)")
 ```
 
 This would be more useful if it had labels for each bar. Can you figure out
@@ -266,7 +266,7 @@ Can you make the bars horizontal?
 barplot(by.feed.type$mean, names.arg = by.feed.type$feed, ylab="Mean weight (g)") ## ANSWER ##
 barplot(by.feed.type$mean, names.arg = by.feed.type$feed, ylab="Mean weight (g)", 
         col=feed.cols) # Changing the bar colour. ## ANSWER ##
-barplot(by.feed.type$mean, names.arg = by.feed.type$feed, ylab="Mean weight (g)", 
+barplot(by.feed.type$mean, names.arg = by.feed.type$feed, xlab="Mean weight (g)", 
         horiz=TRUE, las=1) # Using horizontal bars. ## ANSWER ##
 ```
 
@@ -285,7 +285,7 @@ Can you interpret what's happening in the code below?
 
 ```{r}
 mean.wts <- by.feed.type$mean
-x.pos <- barplot(mean.wts, ylab="Mean weight (g)", ylim=c(0, max(mean.wts)*1.1))
+x.pos <- barplot(mean.wts, ylab="Mean weight (g)", names.arg = by.feed.type$feed, ylim=c(0, max(mean.wts)*1.1))
 mean.plus.se <- mean.wts + se.wts
 segments(x.pos, mean.wts, x.pos, mean.plus.se)
 segments(x.pos+0.1, mean.plus.se, x.pos-0.1, mean.plus.se)
