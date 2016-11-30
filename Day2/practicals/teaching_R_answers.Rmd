@@ -193,39 +193,27 @@ Previous `summary` computes values across all feed types - what's missing here?
 
 ## Computing summaries for each feed type
 
-We need to split up the data values to a list.
+Using `dplyr`, we can calculate summary statistics for each feed group:
 
 ```{r}
-by.feed.type <- split(chickwts$weight, chickwts$feed)
+library(dplyr)
+by.feed.type <- chickwts %>%
+  group_by(feed) %>%
+  summarise(min = min(weight),
+            q1 = quantile(weight, p = 0.25),
+            median = quantile(weight, p = 0.5),
+            mean = mean(weight),
+            q3 = quantile(weight, p = 0.75),
+            max = max(weight),
+            sd = sd(weight),
+            n = n())
+
 by.feed.type
 ```
 
-What does `split` do?
-Try it out on these two vectors below:
+Notice the use of the special function `n()`, which counts how many observations 
+there is in each group.
 
-```{r}
-fruit <-  c("apple", "apple", "grapes", "banana", "apple", "banana")
-colour <- c("green",   "red",    "red", "yellow", "green",  "green")
-split(colour, fruit) # Splits colours by the fruit 
-split(fruit, colour) # Split fruits by the colour 
-```
-
-We loop across the list with a `lapply`, applying `summary` to each element.
-
-```{r}
-lapply(by.feed.type, FUN=summary)
-```
-
-__Advanced:__ the code below does the same job as `lapply` - can you figure out what it does?
-What is `names(by.feed.type)`?
-
-```{r}
-output <- list()
-for (feed.type in names(by.feed.type)) {
-    output[[feed.type]] <- summary(by.feed.type[[feed.type]])
-}
-output
-```
 
 ## Making various types of plots
 
@@ -234,8 +222,11 @@ output
 Let's make a boxplot:
 
 ```{r}
-boxplot(by.feed.type, ylab="Chick weight (g)")
+boxplot(chickwts$weight ~ chickwts$feed, ylab="Chick weight (g)")
 ```
+
+Notice that we use the special notation `~` to specify that we want to plot the
+_weight_ variable split by the _feed_ factor.
 
 How can we colour each box plot separately?
 How can we make them horizontal?
@@ -244,69 +235,50 @@ What do the points in the plot represent (hint: have a look at the `range` argum
 ```{r}
 # Colouring the boxplots: 
 feed.cols <- c("blue", "red", "green", "yellow", "purple", "pink") 
-boxplot(by.feed.type, ylab="Chickweight (g)", col=feed.cols) 
+boxplot(chickwts$weight ~ chickwts$feed, ylab="Chickweight (g)", col=feed.cols) 
 # Making the boxplots horizontal: 
-boxplot(by.feed.type, xlab="Chickweight (g)", horizontal=TRUE, las=1) 
+boxplot(chickwts$weight ~ chickwts$feed, xlab="Chickweight (g)", horizontal=TRUE, las=1) 
 # Extending whiskers to the data extremes: 
-boxplot(by.feed.type, ylab="Chickweight (g)", range=0) 
+boxplot(chickwts$weight ~ chickwts$feed, ylab="Chickweight (g)", range=0) 
 ```
 
 ### Making a barplot
 
 We can also make a barplot of the mean weights for all feed types.
-What does the code below do?
 
 ```{r}
-mean.wts <- lapply(by.feed.type, FUN=mean)
-mean.wts
+barplot(by.feed.type$mean, ylab = "Mean weight (g)")
 ```
 
-The `barplot` function requires a vector, rather than a list.
-What does `unlist` do?
-
-```{r}
-mean.wts <- unlist(mean.wts)
-mean.wts
-```
-
-(Interested users may wish to also look at `sapply`.)
-
-Let's make the barplot:
-
-```{r}
-barplot(mean.wts, ylab="Mean weight (g)")
-```
-
+This would be more useful if it had labels for each bar. Can you figure out
+how to do this from the function's help (`?barplot`)?
 Can you change the colour of each bar?
 Can you make the bars horizontal?
 
 ```{r}
-barplot(mean.wts, ylab="Mean weight (g)", col=feed.cols) # Changing the bar colour.
-barplot(mean.wts, ylab="Mean weight (g)", horiz=TRUE, las=1) # Using horizontal bars.
+barplot(by.feed.type$mean, names.arg = by.feed.type$feed, ylab="Mean weight (g)") 
+barplot(by.feed.type$mean, names.arg = by.feed.type$feed, ylab="Mean weight (g)", 
+        col=feed.cols) # Changing the bar colour. 
+barplot(by.feed.type$mean, names.arg = by.feed.type$feed, xlab="Mean weight (g)", 
+        horiz=TRUE, las=1) # Using horizontal bars. 
 ```
 
 __Advanced__: how do we add error bars?
 Let's compute the standard error:
 
 ```{r}
-sd.wts <- lapply(by.feed.type, FUN=sd)
-sd.wts <- unlist(sd.wts)
-se.wts <- sd.wts/sqrt(lengths(by.feed.type))
+sd.wts <- by.feed.type$sd
+n.obs <- by.feed.type$n
+se.wts <- sd.wts/sqrt(n.obs)
 ```
 
 What's the difference between `sd.wts` and `se.wts`, and which one should we use?
 
-What does `lengths` do, and what's the difference with `length`?
-
-```{r}
-length(by.feed.type) # Gets the length of by.feed.type (number of elements) 
-lengths(by.feed.type) # Gets the length of each element of by.feed.type 
-```
-
 Can you interpret what's happening in the code below?
 
 ```{r}
-x.pos <- barplot(mean.wts, ylab="Mean weight (g)", ylim=c(0, max(mean.wts)*1.1))
+mean.wts <- by.feed.type$mean
+x.pos <- barplot(mean.wts, ylab="Mean weight (g)", names.arg = by.feed.type$feed, ylim=c(0, max(mean.wts)*1.1))
 mean.plus.se <- mean.wts + se.wts
 segments(x.pos, mean.wts, x.pos, mean.plus.se)
 segments(x.pos+0.1, mean.plus.se, x.pos-0.1, mean.plus.se)
@@ -319,11 +291,10 @@ What happens if you take out the `ylim` argument?
 ```{r}
 ```
 
-<!-- ## ANSWER
-The first "segments" draws the vertical part of the error bar. 
-The second "segments" draws the horizontal part of the error bar. 
-The 'ylim' argument ensures that the entirety of the error bar is visible. 
---> 
+* The first "segments" draws the vertical part of the error bar. 
+* The second "segments" draws the horizontal part of the error bar. 
+* The 'ylim' argument ensures that the entirety of the error bar is visible. 
+
 
 # Plotting lines with the `Orange` dataset
 
@@ -348,12 +319,53 @@ How many data points do we have per tree?
 table(Orange$Tree) 
 ```
 
-How can we get summaries of the statistics for each tree?
+Let's say we wanted to calculate the _mean_ and _median_ for both age and 
+circumference of each tree:
 
 ```{r}
-by.tree <- split(Orange[,-1], Orange$Tree) 
-lapply(by.tree, summary) 
+by.tree <- Orange %>%
+  group_by(Tree) %>%
+  summarise(mean_age = mean(age),
+            mean_circumference = mean(circumference),
+            median_age = median(age),
+            median_circumference = median(circumference))
+by.tree
 ```
+
+Although this is a valid way of doing it, it can become quite tedious if we wanted 
+to apply the same functions to many variables.
+
+To help with this problem, there is a function, called `summarise_each`.
+This function applies functions to more than one variable. It works like this:
+
+```{r}
+by.tree <- Orange %>%
+  group_by(Tree) %>%
+  summarise_each(funs(mean = mean(.), median = median(.)), 
+                 age, circumference)
+by.tree
+```
+
+There are three things to notice here:
+* You specify what functions you want to compute inside the special `funs()` function.
+* You need to use the special character `.` inside your functions, instead of the variable name.
+* The function automatically adds the function and variable names together in the output.
+
+Using `summarise_each`, how can we get summary statistics (mean, median, quartiles, 
+minimum and maximum) for the age and circumference of each tree?
+
+```{r}
+by.tree <- Orange %>% 
+  group_by(Tree) %>% 
+  summarise_each(funs(min = min(.), 
+                      q1 = quantile(., p = 0.25), 
+                      median = quantile(., p = 0.5), 
+                      mean = mean(.), 
+                      q3 = quantile(., p = 0.75), 
+                      max = max(.)), 
+                 age, circumference) 
+```
+
 
 ## Making line plots
 
@@ -372,9 +384,11 @@ tree.number <- as.integer(levels(Orange$Tree))[Orange$Tree] # To deal with facto
 tree.col <- c('red', 'blue', 'grey', 'orange', 'darkgreen')
 plot(Orange$age, Orange$circumference, xlab="Age (days)", ylab="Circumference (mm)", 
     col=tree.col[tree.number]) # Each point coloured according to the tree. 
+
 tree.pch <- c(1, 2, 3, 4, 5)
 plot(Orange$age, Orange$circumference, xlab="Age (days)", ylab="Circumference (mm)", 
     pch=tree.pch[tree.number]) # Each point has shape depending on the tree. 
+
 plot(Orange$age, Orange$circumference, xlab="Age (days)", ylab="Circumference (mm)", 
     log="xy") # Putting both axes on the log-scale.  
 ```
@@ -391,10 +405,14 @@ lines(Orange$age[Orange$Tree==4], Orange$circumference[Orange$Tree==4])
 lines(Orange$age[Orange$Tree==5], Orange$circumference[Orange$Tree==5]) 
 ```
 
-What kind of code would you write to do this automatically (hint: involves a `for` loop)?
+There is a way to automate this kind of repetitive task using a programming technique 
+called a `for` loop.
+
+Try and see if you understand what the following code does:
 
 ```{r}
 plot(Orange$age, Orange$circumference, xlab="Age (days)", ylab="Circumference (mm)")
+
 for (tree in unique(Orange$Tree)) { 
     is.tree <- Orange$Tree==tree 
     lines(Orange$age[is.tree], Orange$circumference[is.tree]) 
@@ -484,6 +502,23 @@ plot(trees$Girth, trees$Height)
 par(mar=c(1.1, 1.1, 1.1, 5.1)) # Right margin 
 plot(trees$Girth, trees$Height) 
 ```
+
+Earlier, we made a barplot with mean chicken weights by feed that didn't look quite right:
+
+```{r}
+dev.off() # close and reset the plotting area
+barplot(by.feed.type$mean, names.arg = by.feed.type$feed, xlab="Mean weight (g)",
+        horiz=TRUE, las=1)
+```
+
+Can you make the labels on the y-axis visible?
+
+```{r}
+par(mar = c(5, 6, 4, 2)) 
+barplot(by.feed.type$mean, names.arg = by.feed.type$feed, xlab="Mean weight (g)", 
+        horiz=TRUE, las=1) # Using horizontal bars. 
+```
+
 
 ## Other ways to save R plots
 
