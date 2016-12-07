@@ -100,10 +100,13 @@ What is the relationship between the fitted values, residuals and observations?
 ```
 
 How can I get the R^2^?
+What does this represent?
+How is it related to Pearson's correlation?
 
 ```{r}
 # Put some code here!
 summary(fit)$r.squared
+cor(time, conc)^2
 ```
 
 How can I get the p-values, and what test do the p-values correspond to?
