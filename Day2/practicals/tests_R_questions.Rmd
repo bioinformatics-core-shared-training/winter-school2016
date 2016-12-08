@@ -268,6 +268,7 @@ We can check this with histograms:
 ```{r}
 data1 <- rnorm(1000)
 data2 <- runif(1000)
+par(mfrow=c(1,2)) 
 hist(data1) # looks normal
 hist(data2) # doesn't look normal.
 ```
@@ -277,6 +278,7 @@ These plot the quantiles of the observed distribution (i.e., the value at 10%, 2
 A normally-distributed set of observations should lie on the diagonal of the quantile-quantile plot. 
 
 ```{r}
+par(mfrow=c(1,2)) 
 # Put some code here!
 ```
 
@@ -285,6 +287,7 @@ How do I do this if I have two groups?
 ```{r}
 g1 <- rnorm(1000, mean=1)
 g2 <- rnorm(1000, mean=2)
+par(mfrow=c(1,2)) 
 # Put some code here!
 ```
 
@@ -308,8 +311,11 @@ Whenever possible, it's generally safer to use non-parametric tests.
 Let's re-use our chicken feeding example:
 
 ```{r}
-on.soy # Weights of chickens on soybean
-on.sun # Weights of chickens on sunflower
+on.soy <- c(188, 229, 192, 207, 172, 151, 188, 173, 209, 158, 
+            211, 201, 205, 249, 214, 171, 198, 192, 161, 179)
+on.sun <- c(213, 262, 237, 223, 223, 268, 216, 276, 258, 269,
+            227, 252, 243, 286, 247, 277, 242, 233, 228, 211, 
+            230, 254, 268, 242, 223, 242, 224, 279, 227, 251)
 ```
 
 Our null hypothesis is that these observations come from the same distribution.
@@ -331,7 +337,7 @@ __Note:__ The test outcome can be interpreted as a shift in medians, but only if
 It's worthwhile looking at the data as a sanity check during interpretation:
 
 ```{r}
-# Put some code here!
+boxplot(list(Soybean=on.soy, Sunflower=on.sun), ylab="Weight (g)") 
 ```
 
 (It also is possible to do one-sided tests here, but they are somewhat difficult to interpret if the distribution changes.)
@@ -341,8 +347,9 @@ It's worthwhile looking at the data as a sanity check during interpretation:
 Let's re-use our patient example:
 
 ```{r}
-healthy.exprs # Expression in healthy samples from each patient
-disease.exprs # Expression in disease samples from each patient
+                    #1   #2   #3   #4   #5   #6   #7    #8   #9   #10  #11  #12  #13  #14  #15
+healthy.exprs <- c(6.9, 8.2, 9.0, 7.7, 6.5, 7.7, 5.5,  7.7, 7.6,  8.2, 6.5, 6.3, 8.7, 6.2, 8.4)
+disease.exprs <- c(8.3, 9.5, 9.8, 9.9, 6.6, 8.1, 9.5, 10.0, 8.7, 10.0, 7.5, 8.0, 8.5, 5.0, 8.5)
 ```
 
 Our null hypothesis is that the difference in expression is symmetrically distributed around zero.
