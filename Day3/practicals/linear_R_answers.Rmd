@@ -106,8 +106,8 @@ What does this represent?
 How is it related to Pearson's correlation?
 
 ```{r}
-summary(fit)$r.squared
-cor(time, conc)^2
+cor(time, conc)^2 
+summary(fit)$r.squared 
 ```
 
 How can I get the p-values, and what test do the p-values correspond to?
@@ -427,6 +427,7 @@ That is, my null hypothesis is that no disease has an effect on the score.
 anova(fit) 
 ```
 
+<!--
 ## Using interaction terms
 
 Going back to my drug treatment example from the start:
@@ -481,6 +482,7 @@ weights.mod <- c(60.5, 62.1, 60.7, 65.0, 66.1, 65.3, 62.0, 63.9, 62.1, 59.8, 50.
 summary(lm(weights.mod ~ with.X + with.Y + with.X:with.Y)) # with.Xt is positive...
 mean(weights.mod[with.X=="t"]) - mean(weights.mod[with.X=="n"]) # but average X effect is negative!
 ```
+-->
 
 ## Covariates vs factors
 
@@ -507,7 +509,7 @@ fit2 <- lm(stuff ~ g)
 ```
 
 `fit1` treats `group` as a covariate, and fits a line to `stuff` against the numeric value of `group`.
-`fit2` treats `group` as a factor, and basically computes the average of each level of `group`.
+`fit2` treats `group` as a factor, and computes the average of each level of `group`.
 
 ```{r}
 summary(fit1)
@@ -535,8 +537,6 @@ fit <- lm(weights ~ g + age)
 summary(fit)
 ```
 
-What do the coefficients represent here?
-
 ### It's a trap! Watching out for factors
 
 Behold the following lines of code:
@@ -562,7 +562,7 @@ Thus, subsetting `LETTERS` then pulls out the first element rather than the seco
 
 In short, be very careful when dealing with factors.
 They have their uses, but it's advisable to avoid them altogether unless you really need them, e.g., in `lm`.
-How can we convert factors to normal vectors (hint: `as.character`)? 
+How can we convert factors to normal vectors?
 
 ```{r}
 as.character(f) # This coerces it to a character vector. 
@@ -629,7 +629,7 @@ qqline(lresid2)
 ## Checking for heteroskedasticity
 
 Recall one of the assumptions of the linear model is that the errors are normally distribued with the same variance.
-This is broken by heteroskedasticity:
+This is not true when heteroskedasticity is present.
 
 > Heteroskedasticity = variablity in the variance of our dependent variable, across the range of values of our independent variables.
 
@@ -696,6 +696,7 @@ plot(as.integer(batch), residuals(fit4b), xaxt="n", ylab="Residuals", xlab="Batc
 axis(side=1, at=1:5, levels(batch)) 
 ```
 
+<!--
 # A brief introduction into generalized linear models
 
 The linear modelling framework can be extended to non-normally-distributed data with *generalized* linear models.
@@ -742,6 +743,7 @@ summary(gfit)
 ```
 
 Many more distributions are supported by GLMs --  see `?family` for a list of the ones available in R.
+-->
 
 # Session information
 

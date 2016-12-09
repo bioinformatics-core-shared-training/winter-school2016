@@ -321,7 +321,6 @@ What if the data was paired?
 ```{r}
 disease <- rnorm(1000, mean=1)
 healthy <- rnorm(1000, mean=2)
-par(mfrow=c(1,2)) 
 effect <- disease - healthy 
 qqnorm(effect)
 qqline(effect) 
@@ -339,8 +338,11 @@ Whenever possible, it's generally safer to use non-parametric tests.
 Let's re-use our chicken feeding example:
 
 ```{r}
-on.soy # Weights of chickens on soybean
-on.sun # Weights of chickens on sunflower
+on.soy <- c(188, 229, 192, 207, 172, 151, 188, 173, 209, 158, 
+            211, 201, 205, 249, 214, 171, 198, 192, 161, 179)
+on.sun <- c(213, 262, 237, 223, 223, 268, 216, 276, 258, 269,
+            227, 252, 243, 286, 247, 277, 242, 233, 228, 211, 
+            230, 254, 268, 242, 223, 242, 224, 279, 227, 251)
 ```
 
 Our null hypothesis is that these observations come from the same distribution.
@@ -372,8 +374,9 @@ boxplot(list(Soybean=on.soy, Sunflower=on.sun), ylab="Weight (g)")
 Let's re-use our patient example:
 
 ```{r}
-healthy.exprs # Expression in healthy samples from each patient
-disease.exprs # Expression in disease samples from each patient
+                    #1   #2   #3   #4   #5   #6   #7    #8   #9   #10  #11  #12  #13  #14  #15
+healthy.exprs <- c(6.9, 8.2, 9.0, 7.7, 6.5, 7.7, 5.5,  7.7, 7.6,  8.2, 6.5, 6.3, 8.7, 6.2, 8.4)
+disease.exprs <- c(8.3, 9.5, 9.8, 9.9, 6.6, 8.1, 9.5, 10.0, 8.7, 10.0, 7.5, 8.0, 8.5, 5.0, 8.5)
 ```
 
 Our null hypothesis is that the difference in expression is symmetrically distributed around zero.

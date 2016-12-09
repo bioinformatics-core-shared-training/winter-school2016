@@ -104,9 +104,8 @@ What does this represent?
 How is it related to Pearson's correlation?
 
 ```{r}
+cor(time, conc)^2 
 # Put some code here!
-summary(fit)$r.squared
-cor(time, conc)^2
 ```
 
 How can I get the p-values, and what test do the p-values correspond to?
@@ -119,7 +118,10 @@ Does the p-value for the intercept have any meaning?
 How can I plot the data, along with the line of best fit?
 
 ```{r}
-# Put some code here!
+plot(time, conc, xlab="Time (min)", ylab="Concentration (uM)") 
+abline(a=coef(fit)[1], b=coef(fit)[2], col="red", lwd=2) 
+r2 <- round(summary(fit)$r.squared, 3) 
+text(min(time), max(conc), bquote(R^2*"="*.(r2)), pos=4, col="red") 
 ```
 
 
@@ -392,6 +394,7 @@ That is, my null hypothesis is that no disease has an effect on the score.
 # Put some code here!
 ```
 
+<!--
 ## Using interaction terms
 
 Going back to my drug treatment example from the start:
@@ -443,6 +446,7 @@ weights.mod <- c(60.5, 62.1, 60.7, 65.0, 66.1, 65.3, 62.0, 63.9, 62.1, 59.8, 50.
 summary(lm(weights.mod ~ with.X + with.Y + with.X:with.Y)) # with.Xt is positive...
 mean(weights.mod[with.X=="t"]) - mean(weights.mod[with.X=="n"]) # but average X effect is negative!
 ```
+-->
 
 ## Covariates vs factors
 
@@ -469,7 +473,7 @@ fit2 <- lm(stuff ~ g)
 ```
 
 `fit1` treats `group` as a covariate, and fits a line to `stuff` against the numeric value of `group`.
-`fit2` treats `group` as a factor, and basically computes the average of each level of `group`.
+`fit2` treats `group` as a factor, and computes the average of each level of `group`.
 
 ```{r}
 summary(fit1)
@@ -497,8 +501,6 @@ fit <- lm(weights ~ g + age)
 summary(fit)
 ```
 
-What do the coefficients represent here?
-
 ### It's a trap! Watching out for factors
 
 Behold the following lines of code:
@@ -524,10 +526,12 @@ Thus, subsetting `LETTERS` then pulls out the first element rather than the seco
 
 In short, be very careful when dealing with factors.
 They have their uses, but it's advisable to avoid them altogether unless you really need them, e.g., in `lm`.
-How can we convert factors to normal vectors (hint: `as.character`)? 
+How can we convert factors to normal vectors?
 
 ```{r}
-# Put some code here!
+as.character(f) # This coerces it to a character vector. 
+as.integer(levels(f))[f] # This coerces it into an integer vector. 
+as.integer(f) # This returns the underlying storage values! 
 ```
 
 `read.table` will automatically load strings as factors.
@@ -551,12 +555,14 @@ genotype <- rep(c("AA", "Aa", "aa"), each=10)
 seedsize <- c(3.6, 5.6, 4.7, 4.3, 4.5, 6.0, 5.9, 4.8, 5.0, 6.9,
               2.9, 4.9, 4.3, 2.8, 2.6, 5.0, 3.6, 1.8, 4.2, 4.4,
               0.4, 2.7, 3.4, 1.0, 1.4, 3.7, 3.0, 1.8, 1.5, 2.6)
-# Put some code here!
+genotype <- relevel(factor(genotype), ref="aa") 
+fit <- lm(seedsize ~ genotype) 
 ```
 
 How can we check if the residuals are normally distributed (hint: `qqnorm`)?
 
 ```{r}
+resid <- residuals(fit) 
 # Put some code here!
 ```
 
@@ -566,6 +572,8 @@ What about this second data set?
 seedsize2 <- c(1.2, 3.2, 0.6, 1.2, 3.2, 0.4, 5.6, 2.2, 0.6, 7.0,
                3.8, 0.6, 1.8, 0.8, 1.2, 2.4, 3.4, 6.8, 1.4, 5.0,
                0.8, 9.0, 0.2, 1.0, 0.5, 0.2, 6.6, 2.0, 0.2, 2.0)
+fit2 <- lm(seedsize2 ~ genotype) 
+resid2 <- residuals(fit2) 
 # Put some code here!
 ```
 
@@ -580,7 +588,7 @@ log.seedsize2 <- log(seedsize2)
 ## Checking for heteroskedasticity
 
 Recall one of the assumptions of the linear model is that the errors are normally distribued with the same variance.
-This is broken by heteroskedasticity:
+This is not true when heteroskedasticity is present.
 
 > Heteroskedasticity = variablity in the variance of our dependent variable, across the range of values of our independent variables.
 
@@ -596,7 +604,8 @@ But what about this data set?
 seedsize3 <- c(3.6, 4.4, 6.7, 4.5, 4.8, 4.1, 4.4, 5.0, 5.6, 5.1,
                2.9, 2.2, 1.7, 1.9, 2.0, 2.7, 1.4, 2.2, 1.4, 2.1,
                0.8, 1.1, 1.1, 1.0, 1.0, 0.9, 1.0, 0.8, 1.0, 1.0)
-# Put some code here!
+fit3 <- lm(seedsize3 ~ genotype) 
+plot(fitted(fit3), residuals(fit3), xlab="Fitted values", ylab="Residuals") 
 ```
 
 Heteroskedasticity often occurs in real positive data because the range of variability across large values is larger than that across small values.
@@ -604,6 +613,8 @@ To fix this, we need to "stabilize" the variance using some transformations.
 Again, the log-transformation is a good place to start.
 
 ```{r}
+log.seedsize3 <- log(seedsize3) 
+# Put some code here! 
 ```
 
 ## Checking for additional terms
@@ -630,7 +641,9 @@ What about this data set?
 seedsize4 <- c(3.6, 5.6, 2.7, 2.3, 5.5, 7.0, 4.9, 3.8, 8.0, 9.9,
                2.9, 4.9, 2.3, 0.8, 3.6, 6.0, 2.6, 0.8, 7.2, 7.4,
                0.4, 2.7, 1.4, 0.5, 2.4, 4.7, 2.0, 0.8, 4.5, 5.6)
-# Put some code here!
+fit4 <- lm(seedsize4 ~ genotype) 
+plot(as.integer(batch), residuals(fit4), xaxt="n", ylab="Residuals", xlab="Batch") 
+axis(side=1, at=1:5, levels(batch)) 
 ```
 
 How do we fix this?
@@ -639,6 +652,7 @@ How do we fix this?
 # Put some code here!
 ```
 
+<!--
 # A brief introduction into generalized linear models
 
 The linear modelling framework can be extended to non-normally-distributed data with *generalized* linear models.
@@ -684,6 +698,7 @@ How can I get a p-value to test if the KO has any effect on the expression of th
 ```
 
 Many more distributions are supported by GLMs --  see `?family` for a list of the ones available in R.
+-->
 
 # Session information
 
