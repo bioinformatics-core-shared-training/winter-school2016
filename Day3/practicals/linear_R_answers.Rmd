@@ -4,6 +4,10 @@ author: Aaron Lun and Cataline Vallejos
 date: 11 December 2016
 ---
 
+```{r, echo=FALSE, results="hide"}
+knitr::opts_chunk$set(error=FALSE)
+```
+
 # Introduction
 
 ## What are linear models?
@@ -292,7 +296,7 @@ fertilizer  <- c("N", "N", "N", "N", "L", "L", "L", "L", "H", "H", "H")
 Again, specifying the no-fertilizer group as a baseline:
 
 ```{r}
-fertilizer <- relevel(factor(fertilizer, "N"))
+fertilizer <- relevel(factor(fertilizer), "N")
 fertilizer
 ```
 
